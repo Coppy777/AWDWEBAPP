@@ -141,11 +141,7 @@ else:
         col4.metric("🌫️ ความดันบรรยากาศเฉลี่ย (kPa)", f"{P_mean:.2f}")
         col5.metric("🌞 รังสีสุทธิรวม (MJ/m²)", f"{Rn_total:.2f}")
 
-        st.subheader("📈 กราฟข้อมูลราย 5 นาที")
-        #st.line_chart(filtered_data.set_index('timestamp')[['']])
-        st.line_chart(filtered_data.set_index('timestamp')[['Radiant (W)']])
-        st.bar_chart(filtered_data.set_index('timestamp')['Radiant (kJ)'])
-
+       
         start_date = df['timestamp'].dt.date.min() + timedelta(days=1)
         end_date = df['timestamp'].dt.date.max()
 
@@ -172,11 +168,17 @@ else:
             current_date += timedelta(days=1)
         result_df = pd.DataFrame(eto_results)
         
+
+        # ------------------------- Web page -------------------------
         st.subheader("📊 ตารางค่า ETo รายวัน (07:00 - 06:55)")
         st.dataframe(result_df, use_container_width=True)
+        #st.subheader("📈 กราฟข้อมูลราย 5 นาที")
+        #st.line_chart(filtered_data.set_index('timestamp')[['']])
+        #st.line_chart(filtered_data.set_index('timestamp')[['Radiant (W)']])
+        #st.bar_chart(filtered_data.set_index('timestamp')['Radiant (kJ)'])
 
         csv = result_df.to_csv(index=False).encode('utf-8-sig')
         st.download_button("📥 ดาวน์โหลดผลลัพธ์เป็น CSV", data=csv, file_name="ETo_Daily_Results.csv", mime='text/csv')
-
+  
 
 
