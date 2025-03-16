@@ -38,7 +38,8 @@ if uploaded_file:
 
     plt.figure(figsize=(10, 5))
     sns.lineplot(data=sheet3_df, x="Week", y="Eto (mm)", marker="o", label="ETo")
-    sns.lineplot(data=sheet3_df, x="Week", y="ET (mm)", marker="s", label="ET")
+    sns.lineplot(data=sheet3_df, x="Week", y="ETawd (mm)", marker="s", label="ETawd")
+    sns.lineplot(data=sheet3_df, x="Week", y="ETcal (mm)", marker="^", label="ETcal")
     plt.xlabel("Week")
     plt.ylabel("Values")
     plt.title("ETo & ET per Week")
