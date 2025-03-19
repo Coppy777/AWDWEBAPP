@@ -52,7 +52,7 @@ plt.legend()
 st.pyplot(plt)
 
 # 🔹 Sheet 4
-st.header("📌ตารางแสดงผลการวิเคราห์ค่า Kc นาน้ำขัง Kc นาเปียกสลับแห้ง และ Kc กรมชลประทาน")
+st.header("📌ตารางแสดงผลการวิเคราห์ค่า Kc นาน้ำขัง Kc นาเปียกสลับแห้ง และ Kc กรมชลประทาน รายสัปดาห์")
 st.dataframe(data["Sheet4"])
 
 plt.figure(figsize=(10, 5))
@@ -62,6 +62,6 @@ sns.lineplot(data=data["Sheet4"], x="Week", y="Kc (RID)", marker="^", label="Kc 
 plt.ylim(0, 3)
 plt.xlabel("Week")
 plt.ylabel("Kc ")
-plt.title("KcAWD,Kc(cal) and Kc(RID) per week")
+plt.title("Kc(AWD),Kc(Flooded) and Kc(RID) per week")
 plt.legend()
 st.pyplot(plt)
