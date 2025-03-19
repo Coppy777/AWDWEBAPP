@@ -6,58 +6,62 @@ import seaborn as sns
 # 🎯 main
 st.header("📊 การศึกษาหาค่าสัมประสิทธิ์การใช้น้ำของข้าวด้วยเครื่องวัดระดับน้ำในนาข้าว โดยวิธี Penman-Monteith")
 
-# 📌 upload
-uploaded_file = st.file_uploader("📂 อัปโหลดไฟล์ Excel (.xlsx)", type=["xlsx"])
+# 📌 Fetch data from Google Sheets
+sheet_url = "https://docs.google.com/spreadsheets/d/1JT_GsDU-X-Adq59TPyFqriPcqM_l5ShkxlrCStHtpg0/export?format=xlsx"
 
-if uploaded_file:
-    # read Excel
-    xls = pd.ExcelFile(uploaded_file)
+@st.cache_data
+def load_data(url):
+    xls = pd.ExcelFile(url)
+    return {
+        "Sheet1": pd.read_excel(xls, sheet_name="Sheet1"),
+        "Sheet2": pd.read_excel(xls, sheet_name="Sheet2"),
+        "Sheet3": pd.read_excel(xls, sheet_name="Sheet3"),
+        "Sheet4": pd.read_excel(xls, sheet_name="Sheet4"),
+    }
 
-    # 🔹 Sheet 1: WTH
-    st.header("📌 Wheather Station Data ")
-    sheet1_df = pd.read_excel(xls, sheet_name="Sheet1")
-    st.dataframe(sheet1_df)
+data = load_data(sheet_url)
 
-    # 🔹 Sheet 2: ETo 
-    st.header("📌ETo รายวัน (mm/day) ")
-    sheet2_df = pd.read_excel(xls, sheet_name="Sheet2")
-    st.dataframe(sheet2_df)
+# 🔹 Sheet 1: WTH
+st.header("📌 Wheather Station Data ")
+st.dataframe(data["Sheet1"])
 
-    plt.figure(figsize=(10, 5))
-    sns.lineplot(data=sheet2_df, x="Timestamp", y="ETo (mm/day)", marker="o")
-    plt.xticks(rotation=45)
-    plt.xlabel("D/M/Y")
-    plt.ylabel("ETo")
-    plt.title("ETo vs. Date")
-    st.pyplot(plt)
+# 🔹 Sheet 2: ETo 
+st.header("📌ETo รายวัน (mm/day) ")
+st.dataframe(data["Sheet2"])
 
-    # 🔹 Sheet 3: ETo, ET  Week
-    st.header("📌ตารางแสดงผลค่า ET และ ETo รายสัปดาห์")
-    sheet3_df = pd.read_excel(xls, sheet_name="Sheet3")
-    st.dataframe(sheet3_df)
+plt.figure(figsize=(10, 5))
+sns.lineplot(data=data["Sheet2"], x="Timestamp", y="ETo (mm/day)", marker="o")
+plt.xticks(rotation=45)
+plt.xlabel("D/M/Y")
+plt.ylabel("ETo(mm/day)")
+plt.title("ETo per week")
+st.pyplot(plt)
 
-    plt.figure(figsize=(10, 5))
-    sns.lineplot(data=sheet3_df, x="Week", y="Eto (mm)", marker="o", label="ETo")
-    sns.lineplot(data=sheet3_df, x="Week", y="ETawd (mm)", marker="s", label="ETawd")
-    sns.lineplot(data=sheet3_df, x="Week", y="ETcal (mm)", marker="^", label="ETcal")
-    plt.xlabel("Week")
-    plt.ylabel("Values")
-    plt.title("ETo & ET per Week")
-    plt.legend()
-    st.pyplot(plt)
+# 🔹 Sheet 3: ETo, ET  Week
+st.header("📌ตารางแสดงผลค่า ET นาน้ำขัง ET นาเปียกสลับแห้ง และ ET กรมชลประทาน รายสัปดาห์")
+st.dataframe(data["Sheet3"])
 
-    # 🔹 Sheet 4
-    st.header("📌ตารางแสดงผลการวิเคราห์ค่า Kc นาน้ำขัง Kc นาเปียกสลับแห้ง และ Kc กรมชลประทาน")
-    sheet4_df = pd.read_excel(xls, sheet_name="Sheet4")
-    st.dataframe(sheet4_df)
+plt.figure(figsize=(10, 5))
+sns.lineplot(data=data["Sheet3"], x="Week", y="ET_Flooded (mm/day)", marker="o", label="ET_Flooded (mm/day)")
+sns.lineplot(data=data["Sheet3"], x="Week", y="ET_AWD (mm/day)", marker="s", label="ET_AWD (mm/day)")
+sns.lineplot(data=data["Sheet3"], x="Week", y="ET_RID(mm/day)", marker="^", label="ET_RID(mm/day)")
+plt.xlabel("Week")
+plt.ylabel("ET(mm/day)")
+plt.title(" Evapotranspiration per Week")
+plt.legend()
+st.pyplot(plt)
 
-    plt.figure(figsize=(10, 5))
-    sns.lineplot(data=sheet4_df, x="Week", y="KcAWD(cal)", marker="o", label="KcAWD")
-    sns.lineplot(data=sheet4_df, x="Week", y="Kc(Cal)", marker="s", label="Kc cal")
-    sns.lineplot(data=sheet4_df, x="Week", y="Kc (RID)", marker="^", label="Kc RID")
-    plt.ylim(0, 3)
-    plt.xlabel("Week")
-    plt.ylabel("Kc Values")
-    plt.title("KcAWD,Kc(cal) and Kc(RID) per week")
-    plt.legend()
-    st.pyplot(plt)
+# 🔹 Sheet 4
+st.header("📌ตารางแสดงผลการวิเคราห์ค่า Kc นาน้ำขัง Kc นาเปียกสลับแห้ง และ Kc กรมชลประทาน")
+st.dataframe(data["Sheet4"])
+
+plt.figure(figsize=(10, 5))
+sns.lineplot(data=data["Sheet4"], x="Week", y="Kc(Flooded)", marker="o", label="Kc(Flooded)")
+sns.lineplot(data=data["Sheet4"], x="Week", y="Kc(AWD)", marker="s", label="Kc(AWD)")
+sns.lineplot(data=data["Sheet4"], x="Week", y="Kc (RID)", marker="^", label="Kc (RID)")
+plt.ylim(0, 3)
+plt.xlabel("Week")
+plt.ylabel("Kc ")
+plt.title("KcAWD,Kc(cal) and Kc(RID) per week")
+plt.legend()
+st.pyplot(plt)
