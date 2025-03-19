@@ -47,6 +47,7 @@ sns.lineplot(data=data["Sheet3"], x="Week", y="ET_AWD (mm/day)", marker="s", lab
 sns.lineplot(data=data["Sheet3"], x="Week", y="ET_RID(mm/day)", marker="^", label="ET_RID(mm/day)")
 plt.xlabel("Week")
 plt.ylabel("ET(mm/day)")
+plt.ylim(0, 10)
 plt.title(" Evapotranspiration per Week")
 plt.legend()
 st.pyplot(plt)
